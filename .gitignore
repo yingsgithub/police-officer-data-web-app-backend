@@ -1,0 +1,9 @@
+node_modules/
+build/
+.idea/
+.env.development
+.env.production
+yarn.lock
+#db
+#.DS_Store
+.env
