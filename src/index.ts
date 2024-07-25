@@ -6,12 +6,16 @@ import {createConnection} from "typeorm";
 import {myDS} from "./data-source";
 import {User} from "./entity/User";
 const cors = require("cors");
+const path = require("path");
 
 dotenv.config();
-console.log("PORT--->:", process.env.PORT);
+// require('dotenv').config({ path: path.join(__dirname, `../.env.${process.env.NODE_ENV}`)});
+// dotenv.config({ path: path.join(__dirname, `../.env.${process.env.NODE_ENV}`)});
 
-// const SERVER_PORT = process.env.PORT;
-const SERVER_PORT:number= 3300;
+// require('dotenv-flow').config();
+
+
+const SERVER_PORT = process.env.PORT;
 
 const startServer = async () => {
 

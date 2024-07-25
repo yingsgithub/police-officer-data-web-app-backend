@@ -20,4 +20,6 @@ export class User {
     @Length(5, 1024)
     email: string;
 
+    // @Column({nullable: true})
+    // age: number;
 }
