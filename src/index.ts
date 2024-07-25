@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import {createConnection} from "typeorm";
 import {myDS} from "./data-source";
 import {User} from "./entity/User";
+import routes from "./routes";
 const cors = require("cors");
 const path = require("path");
 
@@ -19,7 +20,7 @@ const SERVER_PORT = process.env.PORT;
 
 const startServer = async () => {
 
-    // todo: connect database
+    // connect database
     try {
         await myDS.initialize()
         console.log('Data Source has been initialized');
@@ -29,25 +30,9 @@ const startServer = async () => {
         app.use(cors());
         app.use(bodyParser.json());
         app.disable('x-powered-by');
-        // app.use('/', (req, res) => {
-        //     res.send('hello world!');
-        // })
-        // app.use(express.json())
-        app.get("/", (req, res) => {
-            res.send("Hello World!");
-        })
 
-        app.get('/users', async (req, res) => {
-            const users = await myDS.getRepository(User).find()
-            res.send(users)
-        })
-
-        app.post('/users', async (req, res) => {
-            const user = await myDS.getRepository(User).create(req.body)
-            const results = await myDS.getRepository(User).save(user)
-            return res.send(results)
-        })
-
+        //register routes
+        app.use('/', routes)
 
         //start express server
         const server = app.listen(SERVER_PORT, () => {
