@@ -6,4 +6,4 @@ build/
 yarn.lock
 #db
 #.DS_Store
-.env
+coverage/
