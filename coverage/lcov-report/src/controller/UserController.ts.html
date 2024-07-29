@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.81% </span>
+                <span class="strong">25.8% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>4/27</span>
+                <span class='fraction'>8/31</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">33.33% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>1/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.81% </span>
+                <span class="strong">27.58% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>4/27</span>
+                <span class='fraction'>8/29</span>
             </div>
         
             
@@ -120,20 +120,11 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -141,12 +132,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -159,13 +152,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response } from "express";
 import {myDS} from "../data-source";
@@ -173,10 +173,10 @@ import {User} from "../entity/User";
 import {validate} from "class-validator";
 &nbsp;
 class UserController {
-<span class="fstat-no" title="function not covered" >    static </span>async getAll(req: Request, res: Response) {
-<span class="cstat-no" title="statement not covered" >        try {</span>
-            const userDB = <span class="cstat-no" title="statement not covered" >myDS.getRepository(User);</span>
-            const users = <span class="cstat-no" title="statement not covered" >await userDB.find()</span>
+<span class="fstat-no" title="function not covered" >    static async g</span>etAll(req: Request, res: Response) {
+        try {
+            const <span class="cstat-no" title="statement not covered" >userDB = myDS.getRepository(User);</span>
+            const <span class="cstat-no" title="statement not covered" >users = <span class="cstat-no" title="statement not covered" >await userDB.find()</span></span>
 <span class="cstat-no" title="statement not covered" >            res.status(200).send(users)</span>
         } catch (error) {
 <span class="cstat-no" title="statement not covered" >            console.log("Error getting users", error)</span>
@@ -184,25 +184,25 @@ class UserController {
         }
     }
 &nbsp;
-<span class="fstat-no" title="function not covered" >    static </span>async addOne(req: Request, res: Response) {
+<span class="fstat-no" title="function not covered" >    static async a</span>ddOne(req: Request, res: Response) {
         // get new user's data from request body
-        let newUserData = <span class="cstat-no" title="statement not covered" >req.body;</span>
+        let <span class="cstat-no" title="statement not covered" >newUserData = req.body;</span>
         // verify if request body is empty or invalid data type
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!newUserData) {</span>
 <span class="cstat-no" title="statement not covered" >            return res.status(400).send("Missing Body");</span>
         }
 &nbsp;
 &nbsp;
-        let userDB = <span class="cstat-no" title="statement not covered" >myDS.getRepository(User);</span>
+        let <span class="cstat-no" title="statement not covered" >userDB = myDS.getRepository(User);</span>
         // Define user
-        let user = <span class="cstat-no" title="statement not covered" >new User()</span>
+        let <span class="cstat-no" title="statement not covered" >user = new User()</span>
 <span class="cstat-no" title="statement not covered" >        user.firstName = newUserData.firstName</span>
 <span class="cstat-no" title="statement not covered" >        user.lastName = newUserData.lastName</span>
 <span class="cstat-no" title="statement not covered" >        user.email = newUserData.email.toLowerCase().trim()</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        try {</span>
+        try {
              //validate user
-            let errors = <span class="cstat-no" title="statement not covered" >await validate(user)</span>
+            let <span class="cstat-no" title="statement not covered" >errors = <span class="cstat-no" title="statement not covered" >await validate(user)</span></span>
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (errors.length &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >                console.log('Validation failed', errors)</span>
 <span class="cstat-no" title="statement not covered" >                return res.status(400).send(`Error validation failed: ${errors}`)</span>
@@ -226,7 +226,7 @@ export default UserController;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-26T05:47:56.810Z
+                at 2024-07-29T14:20:51.614Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

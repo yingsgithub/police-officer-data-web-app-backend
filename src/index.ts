@@ -6,19 +6,20 @@ import {myDS} from "./data-source";
 import {User} from "./entity/User";
 import routes from "./routes";
 import e from "express";
-const cors = require("cors");
-const path = require("path");
+import cors from "cors";
+import path from "path";
 
-dotenv.config();
-// require('dotenv').config({ path: path.join(__dirname, `../.env.${process.env.NODE_ENV}`)});
-// dotenv.config({ path: path.join(__dirname, `../.env.${process.env.NODE_ENV}`)});
+// dotenv.config();
+// require('dotenv').config({ path: path.join(__dirname, `../.env.development.${process.env.NODE_ENV}`)});
+dotenv.config({ path: path.join(__dirname, `../.env.development.${process.env.NODE_ENV}`)});
 
 // require('dotenv-flow').config();
 
 
 const SERVER_PORT = process.env.PORT || 3000;
 //create express app
-const app = express(); //http server
+let app: express.Application //http server
+let server: any
 
 const startServer = async () => {
 
@@ -26,9 +27,10 @@ const startServer = async () => {
     try {
         await myDS.initialize()
         console.log('Data Source has been initialized');
+        // const app = express(); //http server
 
         //create express app
-        // const app = express(); //http server
+        const app = express(); //http server
         app.use(cors());
         app.use(bodyParser.json());
         app.disable('x-powered-by');
@@ -37,7 +39,7 @@ const startServer = async () => {
         app.use('/', routes);
 
         //start express server
-        app.listen(SERVER_PORT, () => {
+        server = app.listen(SERVER_PORT, () => {
             console.log(`NODE_ENV is : ${process.env.NODE_ENV}. \n Server is running on port ${SERVER_PORT}.`);
         })
     }catch(err){
@@ -48,4 +50,10 @@ const startServer = async () => {
 }
 
 startServer()
-export {app}; //exporting the app for testing
+
+const stopServer = () => {
+    if (server) {
+        server.close();
+    }
+}
+export {app, server,startServer, stopServer}; //exporting the app for testing

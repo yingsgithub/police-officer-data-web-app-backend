@@ -1,7 +1,7 @@
 node_modules/
 build/
 .idea/
-.env
+.env.development
 .env.production
 yarn.lock
 #db

@@ -1,6 +1,7 @@
 import {Column, Entity, PrimaryGeneratedColumn, Unique} from "typeorm";
 import {IsEmail, Length,} from "class-validator";
 
+
 @Entity()
 @Unique(['email'])
 export class User {
@@ -20,6 +21,6 @@ export class User {
     @Length(5, 1024)
     email: string;
 
-    // @Column({nullable: true})
-    // age: number;
+    @Column({nullable: true})
+    age: number;
 }
