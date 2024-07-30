@@ -16,11 +16,14 @@ export const myDS = new DataSource({
     database: process.env.POSTGRES_DB,
     synchronize:  process.env.DB_SYNC ? process.env.DB_SYNC.toLowerCase() === 'true' : false,
     logging: ["error", "query", "schema"],
-    entities: ["build/**/*.entity.js"],
+    // entities: ["build/**/*.entity.ts"],
+    entities: [User],
     // entities: [path.join(__dirname, '**', '*.entity.{ts,js}')],
-    migrations: ["build/**/*.migrations.js"],
+    migrations: [User],
+    // migrations: ["build/**/*.migrations.js"],
     // migrations: [path.join(__dirname, '**', '*.migrations.{ts,js}')],
-    subscribers: ["build/**/*.subscribers.js"],
+    // subscribers: ["build/**/*.subscribers.js"],
+    subscribers: [User],
     // subscribers: [path.join(__dirname, '**', '*.subscribers.{ts,js}')],
 })
 // console.log("--->", process.env.DB_SYNC==='true', typeof (process.env.DB_SYNC==='true'))

@@ -11,6 +11,7 @@ import path from "path";
 
 // dotenv.config();
 // require('dotenv').config({ path: path.join(__dirname, `../.env.development.${process.env.NODE_ENV}`)});
+
 dotenv.config({ path: path.join(__dirname, `../.env.development.${process.env.NODE_ENV}`)});
 
 // require('dotenv-flow').config();
@@ -30,7 +31,7 @@ const startServer = async () => {
         // const app = express(); //http server
 
         //create express app
-        const app = express(); //http server
+        app = express(); //http server
         app.use(cors());
         app.use(bodyParser.json());
         app.disable('x-powered-by');
