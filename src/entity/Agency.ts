@@ -1,6 +1,7 @@
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique} from "typeorm";
+import {Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique} from "typeorm";
 import {Length,} from "class-validator";
 import {State} from "./State";
+import {PeaceOfficer} from "./PeaceOfficer";
 
 
 @Entity()
@@ -15,5 +16,6 @@ export class Agency {
     @ManyToOne(() => State, state => state.agencies)
     state: State;
 
-    //todo many to many  Agency <==> peaceOfficer
+    @ManyToMany(() => PeaceOfficer, peaceOfficer => peaceOfficer.agencies)
+    peaceOfficers: PeaceOfficer[];
 }

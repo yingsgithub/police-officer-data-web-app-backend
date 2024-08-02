@@ -83,9 +83,7 @@ class FileController {
         //get filepath
         const filePath = req.file.path;
         console.log("File Path--->", filePath);
-        // const userDB = myDS.getRepository(User);
         const maxRows = 10; //number of rows to read at a time
-        const results: any[] = [];
 
         //Get repositories from database
         let db: DataSource = myDS
@@ -107,7 +105,7 @@ class FileController {
                 .pipe(parse({headers:true, maxRows:maxRows}))
                 .on('data', async (row) => {
                     // console.log("row--->", row);
-                    //todo check format transition in fast-csv
+                    //todo-if have time: check format transition in fast-csv to make destructure bc there are space between the headers in csv
                         // Destructure and process CSV row
                         // const {AgencyName, UID, FirstName, LastName, StartDate, SeparationDate, SeparationReason} = row
                         const agencyName = row['Agency Name'];
@@ -148,6 +146,7 @@ class FileController {
                         console.log("officer query builder", officer)
                         if (!officer) {
                             //if no officer found, create a new officer obj
+                            //todo - validate entity schema
                             officer = officerDB.create({UID, firstName, lastName})
                             officer.agencies = [agency];
                             console.log("new officer", officer)
@@ -163,6 +162,7 @@ class FileController {
 
                         //find or add the work history
                         // Convert start and separation dates to Date objects if they exist
+                        //todo if have time: restructure date without time 00:00::00
                         startDate = startDate ? new Date(startDate) : null;
                         separationDate = separationDate ? new Date(separationDate) : null;
                         //check if the history is already added with the officer at same agency

@@ -21,7 +21,7 @@ export class PeaceOfficer {
     @Length(1, 100)
     lastName: string;
 
-    @OneToMany(() => WorkHistory, workHistory => workHistory.peaceOfficer)
+    @OneToMany(() => WorkHistory, workHistory => workHistory.peaceOfficer, {cascade: true})
     workHistoryList: WorkHistory[];
 
     @ManyToMany(()=>Agency, {
