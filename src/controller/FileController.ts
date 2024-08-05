@@ -12,6 +12,7 @@ import {State} from "../entity/State";
 
 
 
+
 class FileController {
     // Existing methods...
 
@@ -67,139 +68,124 @@ class FileController {
             });
     }
 
-
-    static async uploadCSV(req: Request, res: Response) {
-        //check if request body is empty: request body should contain a csv file and a stateName
+    static async uploadCSV03(req:Request, res:Response) {
         if (!req.file) {
             return res.status(400).send("No file uploaded");
         }
-        const {stateName} = req.body;
-        console.log("req.body--->", stateName);
-
+        const { stateName } = req.body;
         if (!stateName) {
             return res.status(400).send("Missing State");
         }
 
-        //get filepath
         const filePath = req.file.path;
-        console.log("File Path--->", filePath);
-        const maxRows = 10; //number of rows to read at a time
+        const maxRows = 100; // number of rows to read at a time
 
-        //Get repositories from database
-        let db: DataSource = myDS
+        let db: DataSource = myDS;
         let agencyDB = myDS.getRepository(Agency);
         let officerDB = myDS.getRepository(PeaceOfficer);
         let stateDB = myDS.getRepository(State);
         let workHistoryDB = myDS.getRepository(WorkHistory);
 
-        //save to database
         try {
-            //todo save state. Do i need to seed state first ?
-            let state = await stateDB.findOne({ where: {stateName} });
+            let state = await stateDB.findOne({ where: { stateName } });
             if (!state) {
-                state = stateDB.create({stateName});
+                state = stateDB.create({ stateName });
                 await stateDB.save(state);
             }
 
             const stream = fs.createReadStream(filePath)
-                .pipe(parse({headers:true, maxRows:maxRows}))
-                .on('data', async (row) => {
-                    // console.log("row--->", row);
-                    //todo-if have time: check format transition in fast-csv to make destructure bc there are space between the headers in csv
-                        // Destructure and process CSV row
-                        // const {AgencyName, UID, FirstName, LastName, StartDate, SeparationDate, SeparationReason} = row
-                        const agencyName = row['Agency Name'];
-                        const UID = row.UID;
-                        const firstName = row['First Name'];
-                        const lastName = row['Last Name'];
-                        let startDate = row['Start Date'];
-                        let separationDate = row['Separation Date'];
-                        const separationReason = row['Separation Reason'];
+                .pipe(parse({ headers: true, maxRows: maxRows }));
 
-                        console.log("rowData--->", agencyName, UID, firstName, lastName);
+            const processRow = async (row) => {
+                const agencyName = row['Agency Name'];
+                const UID = row.UID;
+                const firstName = row['First Name'];
+                const lastName = row['Last Name'];
+                let startDate = row['Start Date'];
+                let separationDate = row['Separation Date'];
+                const separationReason = row['Separation Reason'];
 
-                        // Find or add the agency
-                        //check if agency already exists in the state
-                        let agency = await agencyDB.findOne({
-                            where: {
-                                agencyName,
-                                state
-                            }});
-                        console.log("agency--->", agency);
-                        if (!agency) {
-                            agency = agencyDB.create({agencyName, state});
-                            await agencyDB.save(agency)
-                        }
+                let agency = await agencyDB.findOne({ where: { agencyName, state } });
+                if (!agency) {
+                    agency = agencyDB.create({ agencyName, state });
+                    await agencyDB.save(agency);
+                    console.log("successfully saved agency--->", agency);
+                }
 
-
-                        //find or add the peace officer
-                        //check if officer with same UID in the same state exits
-                        let officer = await officerDB
-                            .createQueryBuilder("peaceOfficer")
-                            .leftJoinAndSelect("peaceOfficer.agencies", "agencies")
-                            .leftJoinAndSelect("agencies.state", "state")
-                            .where("peaceOfficer.UID = :UID", {UID})
-                            .andWhere("state.id = :stateId", {stateId: state.id})
-                            .getOne()
-
-                        // console.log("state", state, state.id)
-                        console.log("officer query builder", officer)
-                        if (!officer) {
-                            //if no officer found, create a new officer obj
-                            //todo - validate entity schema
-                            officer = officerDB.create({UID, firstName, lastName})
-                            officer.agencies = [agency];
-                            console.log("new officer", officer)
-                        } else {
-                            //check if agency in officer.agencies
-                            const isAgencyLinked = officer.agencies.some(existingAgency => existingAgency.id === agency.id);
-                            if (!isAgencyLinked) { officer.agencies.push(agency); }
-                        }
-
-                        //save officer to db
+                let officer = await officerDB
+                    .createQueryBuilder("peaceOfficer")
+                    .leftJoinAndSelect("peaceOfficer.agencies", "agencies")
+                    .leftJoinAndSelect("agencies.state", "state")
+                    .where("peaceOfficer.UID = :UID", { UID })
+                    .andWhere("state.id = :stateId", { stateId: state.id })
+                    .getOne();
+                console.log("after saving new agency, build a officer query builder to check if this officer exists", officer);
+                if (!officer) {
+                    console.log("A- officer is not exist, create a new object")
+                    officer = officerDB.create({ UID, firstName, lastName });
+                    officer.agencies = [agency];
+                    console.log("B - new officer created", officer);
+                    await officerDB.save(officer);
+                    console.log("C-successfully saved officer!!!!!!!", officer);
+                } else {
+                    console.log("1.officer is exist! let's check their agencies--->", officer.agencies)
+                    const isAgencyLinked = officer.agencies.includes(agency);
+                    console.log("2. Is this officer's agency list includes current agency:", isAgencyLinked)
+                    if (!isAgencyLinked) {
+                        console.log("3.1 if isAgencyLinked is false, add the agency to the officer.agencies");
+                        officer.agencies.push(agency);
                         await officerDB.save(officer);
+                        console.log("3.3 save officer to db-->", officer.agencies);
+                    }
+                }
 
 
-                        //find or add the work history
-                        // Convert start and separation dates to Date objects if they exist
-                        //todo if have time: restructure date without time 00:00::00
-                        startDate = startDate ? new Date(startDate) : null;
-                        separationDate = separationDate ? new Date(separationDate) : null;
-                        //check if the history is already added with the officer at same agency
-                        const workHistory = await workHistoryDB.findOne({
-                            where: {
-                                peaceOfficer: officer,
-                                startDate,
-                                separationDate,
-                            },
-                            relations: ['peaceOfficer', "peaceOfficer.agencies"],
-                        });
-                        console.log("existing workHistory--->", workHistory);
+                //find or add the work history
+                // Convert start and separation dates to Date objects if they exist
+                startDate = startDate ? startDate : null;
+                separationDate = separationDate ? separationDate : null;
+                //check if the history is already added with the officer at same agency
+                const workHistory = await workHistoryDB.findOne({
+                    where: {
+                        peaceOfficer: officer,
+                        agency: agency,
+                        startDate,
+                        separationDate,
+                    },
+                    relations: ['peaceOfficer', 'agency'],
+                });
+                console.log("WH01 existing workHistory--->", workHistory);
 
-                        //if the period doesn't exist, add it
-                        if (!workHistory) {
-                            const newWorkHistory = workHistoryDB.create({
-                                peaceOfficer: officer,
-                                startDate,
-                                separationDate,
-                                separationReason
-                            });
-                            await workHistoryDB.save(newWorkHistory);
-                        }
-                })
-                .on('close', () => {
-                    // console.log("results--->", results);
-                    res.status(200).send("Successfully saved data to database");
-                    fs.unlinkSync(filePath); // Clean up the uploaded file
-                })
+                if (!workHistory) {
+                    console.log("WH02 workingHistory not existing, create a new obj of it")
+                    const newWorkHistory = workHistoryDB.create({
+                        startDate,
+                        separationDate,
+                        separationReason,
+                        peaceOfficer: officer,
+                        agency
+                    });
+                    console.log("WH03 new workHistory--->", newWorkHistory);
+                    await workHistoryDB.save(newWorkHistory);
+                    console.log("WH4 successfully saved workHistory to database-->", newWorkHistory);
+                }
+            };
+
+
+            for await (const row of stream) {
+                await processRow(row);
+                console.log("next row starts")
+            }
+
+            res.status(200).send("Successfully saved data to database");
+            fs.unlinkSync(filePath); // Clean up the uploaded file
         } catch (err) {
             console.error("Error processing data", err);
             res.status(500).send("Error processing data");
             fs.unlinkSync(filePath); // clean up the uploaded file
         }
+
     }
-
-
 }
 
 

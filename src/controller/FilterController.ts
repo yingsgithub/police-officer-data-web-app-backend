@@ -47,30 +47,32 @@ class FilterController {
 
             const agency = await agencyDB.findOne({ where: { agencyName,state }, relations: ['state'] });
             if (!agency) {
-                return res.status(404).send({ message: 'Agency found in the specified state' });
+                return res.status(404).send({ message: 'No agency found in the specified state' });
             }
 
 
-            //Build the query to filter and sort peace officers
-            //when sort is null
+            // Build the query to filter and sort peace officers
+            // when sort is null
             let query = officerDB
                 .createQueryBuilder('peaceOfficer')
-                .leftJoinAndSelect('peaceOfficer.workHistoryList', 'workHistoryList')
-                .leftJoin('peaceOfficer.agencies', 'agency')
+                // .leftJoin('peaceOfficer.agencies', 'agencies')
+                .leftJoinAndSelect('peaceOfficer.workHistoryList', 'workHistory', 'workHistory.agencyId = :agencyId', {agencyId: agency.id})
+                .leftJoinAndSelect('peaceOfficer.agencies', 'agency')
                 .where('agency.id = :agencyId', {agencyId: agency.id})
+
+
 
             //with sortBy
 
             // if (sortBy === "First Name") {query = query.orderBy("peaceOfficer.firstName", "ASC")}
             // if (sortBy === "Last Name") {query = query.orderBy("peaceOfficer.lastName", "ASC")}
+            //TODO SORT BY UID DOES NOT WORK AS UID IS STRING
             // if (sortBy === "UID") {query = query.orderBy("peaceOfficer.UID", "ASC")}
             if (sortBy) {
                 query = query.orderBy(`peaceOfficer.${sortBy}`, "ASC")
             }
             const peaceOfficers = await query.getMany()
             const prettyResponse = JSON.stringify(peaceOfficers);
-
-
             console.log("query of peaceOfficer---->", peaceOfficers)
             return res.status(200).send(`All peaceOfficers at ${agencyName}:\n${prettyResponse} `)
 

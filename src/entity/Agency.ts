@@ -2,9 +2,11 @@ import {Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn
 import {Length,} from "class-validator";
 import {State} from "./State";
 import {PeaceOfficer} from "./PeaceOfficer";
+import {WorkHistory} from "./WorkHistory";
 
 
 @Entity()
+@Unique(["agencyName", "state"])
 export class Agency {
     @PrimaryGeneratedColumn()
     id: number
@@ -18,4 +20,7 @@ export class Agency {
 
     @ManyToMany(() => PeaceOfficer, peaceOfficer => peaceOfficer.agencies)
     peaceOfficers: PeaceOfficer[];
+
+    @OneToMany(() => WorkHistory, workHistory => workHistory.agency)
+    workHistoryList: WorkHistory[];
 }

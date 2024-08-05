@@ -5,7 +5,7 @@ import FileController from "../controller/FileController";
 
 const router = Router();
 const upload = multer({dest: 'uploads/'});
-router.post('/upload', upload.single('file'), FileController.uploadCSV)
+router.post('/upload', upload.single('file'), FileController.uploadCSV03)
 
 
 export default router;

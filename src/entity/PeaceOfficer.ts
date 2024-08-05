@@ -5,6 +5,7 @@ import {Agency} from "./Agency";
 
 
 @Entity()
+@Unique(["UID"])
 export class PeaceOfficer {
     @PrimaryGeneratedColumn()
     id: number
@@ -21,12 +22,10 @@ export class PeaceOfficer {
     @Length(1, 100)
     lastName: string;
 
-    @OneToMany(() => WorkHistory, workHistory => workHistory.peaceOfficer, {cascade: true})
+    @OneToMany(() => WorkHistory, workHistory => workHistory.peaceOfficer)
     workHistoryList: WorkHistory[];
 
-    @ManyToMany(()=>Agency, {
-        cascade: true
-    })
+    @ManyToMany(()=>Agency)
     @JoinTable()
     agencies: Agency[];
 }

@@ -1,6 +1,7 @@
 import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique} from "typeorm";
 import {Length,} from "class-validator";
 import { PeaceOfficer } from './PeaceOfficer';
+import {Agency} from "./Agency";
 
 
 @Entity()
@@ -9,10 +10,10 @@ export class WorkHistory {
     id: number
 
     @Column({nullable: true})
-    startDate: Date;
+    startDate: string;
 
     @Column({nullable: true})
-    separationDate: Date;
+    separationDate: string;
 
     @Column()
     @Length(1, 100)
@@ -20,4 +21,7 @@ export class WorkHistory {
 
     @ManyToOne(() => PeaceOfficer, peaceOfficer => peaceOfficer.workHistoryList)
     peaceOfficer: PeaceOfficer;
+
+    @ManyToOne(() => Agency, agency => agency.workHistoryList )
+    agency:Agency;
 }
