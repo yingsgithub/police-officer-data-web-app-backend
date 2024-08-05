@@ -32,3 +32,4 @@ export const myDS = new DataSource({
     // subscribers: [path.join(__dirname, '**', '*.subscribers.{ts,js}')],
 })
 // console.log("--->", process.env.DB_SYNC==='true', typeof (process.env.DB_SYNC==='true'))
+console.log("cat************************************************")
