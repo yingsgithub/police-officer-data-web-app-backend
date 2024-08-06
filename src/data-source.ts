@@ -9,6 +9,13 @@ import {WorkHistory} from "./entity/WorkHistory";
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
 
+// Define the SSL configuration conditionally
+const sslConfig = process.env.NODE_ENV === 'production' ? {
+    ssl: {
+        rejectUnauthorized: false,
+    }
+} : {};
+
 export const myDS = new DataSource({
     type: "postgres",
     host: process.env.POSTGRES_HOST,
@@ -19,9 +26,9 @@ export const myDS = new DataSource({
     synchronize:  process.env.DB_SYNC ? process.env.DB_SYNC.toLowerCase() === 'true' : false,
     // logging: ["error", "query", "schema"],
     logging: ["error"],
-    ssl: {
-        rejectUnauthorized: false,
-    },
+    // ssl: {
+    //     rejectUnauthorized: false,
+    // },
     entities: [User, Agency, PeaceOfficer, State, WorkHistory],
     migrations: [path.join(__dirname, '**', '*.migration.{ts,js}')],
     // migrations: [path.join(__dirname, 'migration', '**', '*.{ts,js}')],
@@ -35,7 +42,8 @@ export const myDS = new DataSource({
     // migrations: ["src/migration/*.ts"],
     subscribers: ["src/subscribers/*.ts"],
     // subscribers: ["build/**/*.subscribers.js"],
-    "migrationsTableName": "migrations"
+    "migrationsTableName": "migrations",
+    ...sslConfig
 })
 
 // console.log('Database User:', process.env.POSTGRES_USER);
