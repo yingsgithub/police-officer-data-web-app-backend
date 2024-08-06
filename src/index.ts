@@ -12,10 +12,12 @@ import path from "path";
 // dotenv.config();
 // require('dotenv').config({ path: path.join(__dirname, `../.env.development.${process.env.NODE_ENV}`)});
 
-dotenv.config({ path: path.join(__dirname, `../.env.development.${process.env.NODE_ENV}`)});
+console.log("hello world")
+// dotenv.config({ path: path.join(__dirname, `../.env.${process.env.NODE_ENV}`)});
 
 // require('dotenv-flow').config();
-
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+console.log("hello world 02")
 
 const SERVER_PORT = process.env.PORT || 3000;
 //create express app

@@ -8,9 +8,7 @@ import {State} from "./entity/State";
 import {WorkHistory} from "./entity/WorkHistory";
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
-console.log('Database User:', process.env.POSTGRES_USER);
-console.log('Database Password:', process.env.POSTGRES_PASSWORD);
-console.log('Database Name:', process.env.POSTGRES_DB);
+
 export const myDS = new DataSource({
     type: "postgres",
     host: process.env.POSTGRES_HOST,
@@ -21,15 +19,26 @@ export const myDS = new DataSource({
     synchronize:  process.env.DB_SYNC ? process.env.DB_SYNC.toLowerCase() === 'true' : false,
     // logging: ["error", "query", "schema"],
     logging: ["error"],
-    // entities: ["build/**/*.entity.ts"],I
+    ssl: {
+        rejectUnauthorized: false,
+    },
     entities: [User, Agency, PeaceOfficer, State, WorkHistory],
-    // entities: [path.join(__dirname, '**', '*.entity.{ts,js}')],
-    migrations: [User, Agency, PeaceOfficer, State, WorkHistory],
-    // migrations: ["build/**/*.migrations.js"],
-    // migrations: [path.join(__dirname, '**', '*.migrations.{ts,js}')],
-    // subscribers: ["build/**/*.subscribers.js"],
-    subscribers: [User, Agency, PeaceOfficer, State, WorkHistory],
+    // migrations: [path.join(__dirname, '**', '*.migration.{ts,js}')],
+    // migrations: [path.join(__dirname, 'migration', '**', '*.{ts,js}')],
+
     // subscribers: [path.join(__dirname, '**', '*.subscribers.{ts,js}')],
+    // subscribers: [User, Agency, PeaceOfficer, State, WorkHistory],
+    // entities: ["build/**/*.entity.ts"],I
+    // entities: [path.join(__dirname, '**', '*.entity.{ts,js}')],
+    // migrations: [User, Agency, PeaceOfficer, State, WorkHistory],
+    // migrations: ["src/**/*.migration.ts"],
+    migrations: ["src/migration/*.ts"],
+    subscribers: ["src/subscribers/*.ts"],
+    // subscribers: ["build/**/*.subscribers.js"],
+    "migrationsTableName": "migrations"
 })
-// console.log("--->", process.env.DB_SYNC==='true', typeof (process.env.DB_SYNC==='true'))
-console.log("cat************************************************")
+
+console.log('Database User:', process.env.POSTGRES_USER);
+console.log('Database Password:', process.env.POSTGRES_PASSWORD);
+console.log('Database Name:', process.env.POSTGRES_DB);
+console.log('Database Host:', process.env.POSTGRES_HOST);

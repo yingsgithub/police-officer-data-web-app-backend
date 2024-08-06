@@ -38,15 +38,15 @@
     "start": "cross-env NODE_ENV=production node build/index.js",
     "dev:start": "cross-env NODE_ENV=development  ts-node-dev --respawn --transpile-only ./src/index.ts",
     "test": "cross-env  jest --config jest.config.js --coverage --detectOpenHandles",
-    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
+    "typeorm": "node --require ts-node/register -r ./load-env.ts ./node_modules/typeorm/cli.js",
     "[__for TypeORM migration": "",
-    "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create",
-    "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run -- -d src/data-source.ts",
+    "migration:create": "cross-env NODE_ENV=production ts-node ./node_modules/typeorm/cli.js migration:create",
     "migration:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert -- -d src/data-source.ts",
     "schema:drop": "NODE_ENV=development ts-node ./node_modules/typeorm/cli.js schema:drop",
     "schema:sync": "NODE_ENV=development ts-node ./node_modules/typeorm/cli.js schema:sync -d src/data-source.ts",
     "migration:show": "ts-node ./node_modules/typeorm/cli.js migration:show -- -d src/data-source.ts",
-    "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -d src/data-source.ts",
+    "migration:generate": "cross-env NODE_ENV=production ts-node ./node_modules/typeorm/cli.js migration:generate -d src/data-source.ts",
+    "migration:run": "cross-env NODE_ENV=production ts-node ./node_modules/typeorm/cli.js migration:run -d src/data-source.ts",
     "]__for TypeORM migration": ""
   }
 }
