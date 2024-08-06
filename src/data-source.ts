@@ -23,7 +23,7 @@ export const myDS = new DataSource({
         rejectUnauthorized: false,
     },
     entities: [User, Agency, PeaceOfficer, State, WorkHistory],
-    // migrations: [path.join(__dirname, '**', '*.migration.{ts,js}')],
+    migrations: [path.join(__dirname, '**', '*.migration.{ts,js}')],
     // migrations: [path.join(__dirname, 'migration', '**', '*.{ts,js}')],
 
     // subscribers: [path.join(__dirname, '**', '*.subscribers.{ts,js}')],
@@ -32,13 +32,13 @@ export const myDS = new DataSource({
     // entities: [path.join(__dirname, '**', '*.entity.{ts,js}')],
     // migrations: [User, Agency, PeaceOfficer, State, WorkHistory],
     // migrations: ["src/**/*.migration.ts"],
-    migrations: ["src/migration/*.ts"],
+    // migrations: ["src/migration/*.ts"],
     subscribers: ["src/subscribers/*.ts"],
     // subscribers: ["build/**/*.subscribers.js"],
     "migrationsTableName": "migrations"
 })
 
-console.log('Database User:', process.env.POSTGRES_USER);
-console.log('Database Password:', process.env.POSTGRES_PASSWORD);
-console.log('Database Name:', process.env.POSTGRES_DB);
-console.log('Database Host:', process.env.POSTGRES_HOST);
+// console.log('Database User:', process.env.POSTGRES_USER);
+// console.log('Database Password:', process.env.POSTGRES_PASSWORD);
+// console.log('Database Name:', process.env.POSTGRES_DB);
+// console.log('Database Host:', process.env.POSTGRES_HOST);
