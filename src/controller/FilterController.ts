@@ -12,7 +12,11 @@ class FilterController {
 
     //get peace officer list with agency and state.
     static async peaceOfficerFilter(req: Request, res: Response) {
-        let {stateName, agencyName, sortBy} = req.body
+        let {stateCode, agencyName, sortBy} = req.body
+        if (!stateCode) {
+            return res.status(400).send("Missing state");
+        }
+        stateCode = stateCode.toUpperCase()
 
         //Get repositories from database
         let db: DataSource = myDS
@@ -24,7 +28,7 @@ class FilterController {
         try{
             //validation:
             //check state exists:
-            const state = await stateDB.findOne({ where: { stateName } });
+            const state = await stateDB.findOne({ where: { stateCode } });
             if (!state) {
                 return res.status(404).send({ message: 'Hold tight! The data for this state is on its way. Check back soon!' });
             }
@@ -81,10 +85,11 @@ class FilterController {
 
     //get all agencies with a selected state.
     static async stateFilter(req: Request, res: Response) {
-        const {stateName} = req.body
-        if (!stateName) {
+        let {stateCode} = req.body
+        if (!stateCode) {
             return res.status(400).send("Missing State");
         }
+        stateCode = stateCode.toUpperCase()
 
         //Get repositories from database
         let db: DataSource = myDS
@@ -94,7 +99,7 @@ class FilterController {
         //check if state exists
         try {
             dataByState = await stateDB.findOne({
-                where: {stateName},
+                where: {stateCode},
                 relations: [
                     "agencies",
                     "agencies.peaceOfficers",

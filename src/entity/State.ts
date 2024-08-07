@@ -10,10 +10,8 @@ export class State {
     id: number
 
     @Column({unique:true})
-    stateName: string;
-
-    // @Column({unique:true})
-    // stateCode: string;
+    @Length(1, 3)
+    stateCode: string;
 
     @OneToMany(() => Agency, agency => agency.state)
     agencies: Agency[];

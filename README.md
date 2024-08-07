@@ -20,8 +20,8 @@ run database:
 
 
 Steps to generate Migration files and run:
-1. Run `yarn typeorm migration:generate -d src/data-source.ts src/migration/<migrationFileName>` to generate migration file
-2. Run `yarn typeorm migration:run -d src/data-source.ts` to execute it
+1. Run `yarn migration:generate src/migration/<migrationFileName>` to generate migration file
+2. Run `yarn migration:run` to execute it
 
 Steps to update database schema in development env:
 Run `yarn schema:sync` every time after any schema changes

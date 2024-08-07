@@ -46,21 +46,6 @@ class FileController {
                 res.status(200).send(results);
                 fs.unlinkSync(filePath); // Clean up the uploaded file
             })
-            // .on('end', (rowCount: number) => {
-            //     console.log("results--->", results);
-            //     res.status(200).send(results);
-            //     fs.unlinkSync(filePath); // Clean up the uploaded file
-            
-                // try {
-                //     await userDB.save(users);
-                //     res.status(200).send("Users added successfully");
-                // } catch (error) {
-                //     console.log("Error saving users", error);
-                //     res.status(500).send("Error saving users");
-                // } finally {
-                //     fs.unlinkSync(filePath); // Clean up the uploaded file
-                // }
-            // })
             .on('error', (error) => {
                 console.error("Error reading CSV file", error);
                 res.status(500).send("Error reading CSV file");
@@ -68,14 +53,15 @@ class FileController {
             });
     }
 
-    static async uploadCSV03(req:Request, res:Response) {
+    static async uploadCSV(req:Request, res:Response) {
         if (!req.file) {
             return res.status(400).send("No file uploaded");
         }
-        const { stateName } = req.body;
-        if (!stateName) {
+        let { stateCode } = req.body;
+        if (!stateCode) {
             return res.status(400).send("Missing State");
         }
+        stateCode = stateCode.toUpperCase()
 
         const filePath = req.file.path;
         const maxRows = 100; // number of rows to read at a time
@@ -87,9 +73,9 @@ class FileController {
         let workHistoryDB = myDS.getRepository(WorkHistory);
 
         try {
-            let state = await stateDB.findOne({ where: { stateName } });
+            let state = await stateDB.findOne({ where: { stateCode } });
             if (!state) {
-                state = stateDB.create({ stateName });
+                state = stateDB.create({ stateCode });
                 await stateDB.save(state);
             }
 
