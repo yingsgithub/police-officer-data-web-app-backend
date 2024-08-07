@@ -1,19 +1,16 @@
-import { Request, Response } from 'express';
+import {query, Request, Response} from 'express';
 import { myDS } from '../data-source';
-import { User } from '../entity/User';
-import fs from 'fs';
-import csvParser from 'csv-parser';
-import {parse} from '@fast-csv/parse';
 import {DataSource} from "typeorm";
 import {Agency} from "../entity/Agency";
 import {PeaceOfficer} from "../entity/PeaceOfficer";
 import {WorkHistory} from "../entity/WorkHistory";
 import {State} from "../entity/State";
+import {WorkHistoryDTO, PeaceOfficerDTO,AgencyDTO} from "./interface";
 
 
 class FilterController {
-    // Existing methods...
 
+    //get peace officer list with agency and state.
     static async peaceOfficerFilter(req: Request, res: Response) {
         let {stateName, agencyName, sortBy} = req.body
 
@@ -67,13 +64,12 @@ class FilterController {
             // if (sortBy === "First Name") {query = query.orderBy("peaceOfficer.firstName", "ASC")}
             // if (sortBy === "Last Name") {query = query.orderBy("peaceOfficer.lastName", "ASC")}
             //TODO SORT BY UID DOES NOT WORK AS UID IS STRING
-            // if (sortBy === "UID") {query = query.orderBy("peaceOfficer.UID", "ASC")}
             if (sortBy) {
                 query = query.orderBy(`peaceOfficer.${sortBy}`, "ASC")
             }
             const peaceOfficers = await query.getMany()
             const prettyResponse = JSON.stringify(peaceOfficers);
-            console.log("query of peaceOfficer---->", peaceOfficers)
+            // console.log("query of peaceOfficer---->", peaceOfficers)
             return res.status(200).send(`All peaceOfficers at ${agencyName}:\n${prettyResponse} `)
 
         } catch (err) {
@@ -83,11 +79,64 @@ class FilterController {
 
     }
 
+    //get all agencies with a selected state.
+    static async stateFilter(req: Request, res: Response) {
+        const {stateName} = req.body
+        if (!stateName) {
+            return res.status(400).send("Missing State");
+        }
 
+        //Get repositories from database
+        let db: DataSource = myDS
+        let stateDB = myDS.getRepository(State);
+        let dataByState: State
+
+        //check if state exists
+        try {
+            dataByState = await stateDB.findOne({
+                where: {stateName},
+                relations: [
+                    "agencies",
+                    "agencies.peaceOfficers",
+                    "agencies.peaceOfficers.workHistoryList",
+                    "agencies.peaceOfficers.workHistoryList.agency"]
+            });
+            // const stateJson = JSON.stringify(dataByState)
+            if (!dataByState) {
+                res.status(404).send({message: 'Data for this state is on its way. Check back soon!'});
+            }
+        } catch (err) {
+            res.status(500).send({ message: 'Internal server error' });
+        }
+
+
+        const agencies = dataByState.agencies
+
+        const result: AgencyDTO[] = agencies.map(agency => ({
+            id: agency.id,
+            agencyName: agency.agencyName,
+            //for each officer in peaceOfficerList
+            // ---> each officer has a workHistoryList and for each history in historyList
+            // ---> look for history.agency.id == agency.id
+            peaceOfficerList: agency.peaceOfficers.map(officer=>({
+                id: officer.id,
+                UID: officer.UID,
+                name: `${officer.firstName}  ${officer.lastName}`,
+                workHistory: officer.workHistoryList.filter(history=> history.agency.id == agency.id)
+                    .map(history =>({
+                        id: history.id,
+                        startDate:history.startDate,
+                        separationDate:history.separationDate,
+                        separationReason:history.separationReason,
+                    }))
+            }))
+        }));
+
+        const resultJson = JSON.stringify(result);
+        res.status(200).send(resultJson)
+
+    }
 
 }
-
-
-
 
 export default FilterController;

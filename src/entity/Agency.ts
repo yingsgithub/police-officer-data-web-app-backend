@@ -18,9 +18,9 @@ export class Agency {
     @ManyToOne(() => State, state => state.agencies)
     state: State;
 
-    @ManyToMany(() => PeaceOfficer, peaceOfficer => peaceOfficer.agencies)
+    @ManyToMany(() => PeaceOfficer, peaceOfficer => peaceOfficer.agencies, {cascade:true})
     peaceOfficers: PeaceOfficer[];
 
-    @OneToMany(() => WorkHistory, workHistory => workHistory.agency)
+    @OneToMany(() => WorkHistory, workHistory => workHistory.agency, {cascade:true})
     workHistoryList: WorkHistory[];
 }

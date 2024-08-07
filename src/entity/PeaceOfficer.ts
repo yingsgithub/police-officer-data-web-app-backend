@@ -25,7 +25,7 @@ export class PeaceOfficer {
     @OneToMany(() => WorkHistory, workHistory => workHistory.peaceOfficer)
     workHistoryList: WorkHistory[];
 
-    @ManyToMany(()=>Agency)
+    @ManyToMany(()=>Agency, agency => agency.peaceOfficers)
     @JoinTable()
     agencies: Agency[];
 }
