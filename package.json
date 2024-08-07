@@ -47,7 +47,7 @@
     "migration:show": "ts-node ./node_modules/typeorm/cli.js migration:show -- -d src/data-source.ts",
     "migration:generate": "cross-env NODE_ENV=production ts-node ./node_modules/typeorm/cli.js migration:generate -d src/data-source.ts",
     "migration:run": "cross-env NODE_ENV=production ts-node ./node_modules/typeorm/cli.js migration:run -d src/data-source.ts",
-    "postdeploy": "yarn typeorm migration:run",
+    "postdeploy": "yarn migration:run",
     "]__for TypeORM migration": ""
   }
 }
