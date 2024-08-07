@@ -30,8 +30,8 @@ export const myDS = new DataSource({
     //     rejectUnauthorized: false,
     // },
     entities: [User, Agency, PeaceOfficer, State, WorkHistory],
-    migrations: [path.join(__dirname, '**', '*.migration.{ts,js}')],
-    // migrations: [path.join(__dirname, 'migration', '**', '*.{ts,js}')],
+    // migrations: [path.join(__dirname, '**', '*.migration.{ts,js}')],
+    migrations: [path.join(__dirname, 'migration', '**', '*.{ts,js}')],
 
     // subscribers: [path.join(__dirname, '**', '*.subscribers.{ts,js}')],
     // subscribers: [User, Agency, PeaceOfficer, State, WorkHistory],
