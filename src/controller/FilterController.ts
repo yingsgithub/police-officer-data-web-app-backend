@@ -245,9 +245,9 @@ class FilterController {
                     query = query.orderBy(`peaceOfficer.${sortBy}`, "ASC")
                 }
                 const peaceOfficers = await query.getMany()
-                const prettyResponse = JSON.stringify(peaceOfficers);
+                const responseJson = JSON.stringify(peaceOfficers, null, 2);
                 // console.log("query of peaceOfficer---->", peaceOfficers)
-                return res.status(200).send(`All peaceOfficers at ${agencyName}:\n${prettyResponse} `)
+                return res.status(200).send(responseJson)
 
             } catch (err) {
                 console.error('Error filtering peace officers:', err);
