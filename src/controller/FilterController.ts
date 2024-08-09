@@ -5,7 +5,8 @@ import {Agency} from "../entity/Agency";
 import {PeaceOfficer} from "../entity/PeaceOfficer";
 import {WorkHistory} from "../entity/WorkHistory";
 import {State} from "../entity/State";
-import {WorkHistoryDTO, PeaceOfficerDTO,AgencyDTO} from "./interface";
+import {AgencyDTO} from "./interface";
+
 
 
 class FilterController {
@@ -127,7 +128,8 @@ class FilterController {
             peaceOfficerList: agency.peaceOfficers.map(officer=>({
                 id: officer.id,
                 UID: officer.UID,
-                name: `${officer.firstName}  ${officer.lastName}`,
+                firstName: officer.firstName,
+                lastName: officer.lastName,
                 workHistory: officer.workHistoryList.filter(history=> history.agency.id == agency.id)
                     .map(history =>({
                         id: history.id,
@@ -199,7 +201,8 @@ class FilterController {
                 peaceOfficerList: agency.peaceOfficers.map(officer => ({
                     id: officer.id,
                     UID: officer.UID,
-                    name: `${officer.firstName}  ${officer.lastName}`,
+                    firstName: officer.firstName,
+                    lastName: officer.lastName,
                     workHistory: officer.workHistoryList.filter(history => history.agency.id == agency.id)
                         .map(history => ({
                             id: history.id,

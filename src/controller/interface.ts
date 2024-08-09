@@ -7,7 +7,8 @@ export interface WorkHistoryDTO {
 
 export interface PeaceOfficerDTO {
     id: number;
-    name: string;
+    firstName: string;
+    lastName: string;
     workHistory: WorkHistoryDTO[];
 }
 
