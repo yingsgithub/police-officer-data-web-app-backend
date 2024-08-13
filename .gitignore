@@ -3,6 +3,7 @@ build/
 .idea/
 .env.development
 .env.production
+.env.test
 yarn.lock
 #db
 #.DS_Store

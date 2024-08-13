@@ -41,6 +41,7 @@ class FilterController {
 
         // get all data from db with selected state, agency and sortBy are NULL
         if (!lastName && !firstName && !UID && (!agencyName || String(agencyName).toLowerCase() === "all")) {
+            console.log("Search by state")
 
             //check if state exists
             try {
@@ -90,7 +91,7 @@ class FilterController {
         // 2. Filter by agency name
         else if (agencyName) {
             try{
-                console.log("------Filter by agency Name-----")
+                console.log("Search by agency Name")
                 //get state obj to get agency under that state with typeorm db api -- use state in case different state have same agency name
                 const state = await stateDB.findOne({ where: { stateCode } });
                 agencyName = String(agencyName);
@@ -133,25 +134,25 @@ class FilterController {
                 res.status(500).send({ message: 'Internal server error' });
             }
 
+        }
             //search by UID, first name or last name
-        } else if (UID || firstName || lastName) {
+        else if (UID || firstName || lastName ) {
             try{
-                console.log("search by------>",UID, firstName, lastName);
+                console.log("search by UID/first name/last name/agency");
                 let query= officerDB
                     .createQueryBuilder('peaceOfficer')
                     .leftJoinAndSelect('peaceOfficer.workHistoryList','workHistory')
                     .leftJoinAndSelect('workHistory.agency','workHistoryAgency')
                     .leftJoin('workHistoryAgency.state', 'state')
                     .where('state.stateCode = :stateCode', { stateCode })
-                    // .leftJoinAndSelect('peaceOfficer.agencies','agency')
                     if (UID) {
-                        query = query.andWhere('peaceOfficer.UID= :UID',{UID})
+                        query = query.andWhere('peaceOfficer.UID = :UID',{UID})
                     }
                     if (firstName) {
-                        query = query.andWhere('peaceOfficer.firstName= :firstName', {firstName})
+                        query = query.andWhere('peaceOfficer.firstName = :firstName', {firstName})
                     }
                     if (lastName) {
-                        query = query.andWhere('peaceOfficer.lastName= :lastName', {lastName})
+                        query = query.andWhere('peaceOfficer.lastName = :lastName', {lastName})
                     }
 
                 if (sortBy) {
@@ -163,20 +164,102 @@ class FilterController {
                         if (stateCode === "WA") {
                             query = query.orderBy(`peaceOfficer.${sortBy}`, "ASC")
                         }
-                    } else if (sortBy === "firstName" || "lastName") {
+                    } else if (sortBy === "firstName" || "lastName" ) {
                         console.log("Sort By firstName or lastName")
                         query = query.orderBy(`peaceOfficer.${sortBy}`, "ASC")
                     }
                 }
                 const peaceOfficers = await query.getMany()
+                if(peaceOfficers.length == 0) {
+                    return res.status(404).send({ message: `No data found` });
+                }
                 const responseJson=JSON.stringify(peaceOfficers,null,2);
                 return res.status(200).send(responseJson)
-        } catch (err) {
+
+                    } catch (err) {
                 console.error('Error searching:', err);
                 res.status(500).send({ message: 'Error searching:', err});
             }
-        }
+            }
     }
+
+
+    static async stateFilterUpdated(req: Request, res: Response) {
+        //receive query from client
+        let {
+            stateCode,
+            agencyName,
+            sortBy,
+            UID,
+            firstName,
+            lastName
+        } = req.query
+        // console.log("params from http request", req.query)
+
+        //state code is required to get data, if no state code received, return error response
+        if (!stateCode) {
+            return res.status(400).send("Missing State");
+        }
+        stateCode = String(stateCode).toUpperCase()
+
+
+        //Get repositories from database
+        let db: DataSource = myDS
+        let stateDB = db.getRepository(State);
+        let agencyDB = db.getRepository(Agency);
+        let officerDB = db.getRepository(PeaceOfficer);
+        let workHistoryDB = db.getRepository(WorkHistory);
+        let dataByState: State
+
+
+        try{
+            console.log("---------search by UID/first name/last name/agency------");
+            let query= officerDB
+                .createQueryBuilder('peaceOfficer')
+                .leftJoinAndSelect('peaceOfficer.workHistoryList','workHistory')
+                .leftJoinAndSelect('workHistory.agency','workHistoryAgency')
+                .leftJoin('workHistoryAgency.state', 'state')
+                .where('state.stateCode = :stateCode', { stateCode })
+            // .leftJoinAndSelect('peaceOfficer.agencies','agency')
+            if (UID) {
+                query = query.andWhere('peaceOfficer.UID like  :UID',{UID: `%${UID}%`})
+            }
+            if (firstName) {
+                query = query.andWhere('peaceOfficer.firstName like :firstName', {firstName: `%${firstName}%`})
+            }
+            if (lastName) {
+                query = query.andWhere('peaceOfficer.lastName like :lastName', {lastName: `%${lastName}%`})
+            }
+            if (agencyName) {
+                query = query.andWhere('workHistoryAgency.agencyName like :agencyName', {agencyName: `%${agencyName}%`})
+            }
+
+
+            if (sortBy) {
+                //todo sortBy agencyName
+                if (sortBy === "UID") {
+                    console.log("Sort By UID")
+                    if (stateCode === "VT") {
+                        query = query.orderBy(`CAST(peaceOfficer.${sortBy} AS INTEGER)`, "ASC")
+                    }
+                    if (stateCode === "WA") {
+                        query = query.orderBy(`peaceOfficer.${sortBy}`, "ASC")
+                    }
+                } else if (sortBy === "firstName" || "lastName") {
+                    console.log("Sort By firstName or lastName")
+                    query = query.orderBy(`peaceOfficer.${sortBy}`, "ASC")
+                }
+            }
+            const peaceOfficers = await query.getMany()
+            const responseJson=JSON.stringify(peaceOfficers,null,2);
+            return res.status(200).send(responseJson)
+        } catch (err) {
+            console.error('Error searching:', err);
+            res.status(500).send({ message: 'Error searching:', err});
+        }
+        // }
+    }
+
 }
 
 export default FilterController;
